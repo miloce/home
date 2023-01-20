@@ -46,14 +46,14 @@
         </Icon>
       </a>
       <a
-        id="tikok"
-        :href="socialLinks.tikok"
+        id="tiktok"
+        :href="socialLinks.tiktok"
         target="_blank"
         @mouseenter="changeTip"
         @mouseleave="leaveTip"
       >
         <Icon size="24">
-          <Tikok />
+          <Tiktok />
         </Icon>
       </a>
     </div>
