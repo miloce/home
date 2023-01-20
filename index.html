@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Access-Control-Allow-Origin" content="*">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="洛栀的个人主页，期待在比特之海与你相遇！" />
+  <meta name="keywords" content="洛栀,Miloce,个人主页" />
+  <meta name="author" content="洛栀" />
+  <meta name="theme-color" content="#424242" />
+  <title>生活中的锁事- About me｜期待在比特之海与你相遇</title>
+  <!-- HarmonyOS Sans -->
+  <link rel="stylesheet" href="https://s1.hdslb.com/bfs/static/jinkela/long/font/regular.css" />
+  <link rel="icon" href="/images/icon/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/icon/apple-touch-icon.png">
+  <link rel="stylesheet" href="/loading/loading.min.css">
+  <!-- IE Out -->
+  <script>
+    if ( /*@cc_on!@*/ false || (!!window.MSInputMethodContext && !!document.documentMode))
+      window.location.href =
+      "https://support.dmeng.net/upgrade-your-browser.html?referrer=" + encodeURIComponent(window.location.href)
+  </script>
+</head>
+
+<body class="loading">
+  <!--加载动画-->
+  <div id="loading-box">
+    <div class="loading-left-bg"></div>
+    <div class="loading-right-bg"></div>
+    <div class="spinner-box">
+      <div class="loader">
+        <div class="inner one"></div>
+        <div class="inner two"></div>
+        <div class="inner three"></div>
+      </div>
+      <div class="loading-word">
+        <p class="loading-title" id="loading-title"><%- title %></p>
+        <span id="loading-text">加载中</span>
+      </div>
+    </div>
+  </div>
+  <!-- 主体内容 -->
+  <div id="app"></div>
+  <!-- noscript -->
+  <noscript>
+    <div style="text-align: center">请开启 JavaScript</div>
+  </noscript>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
