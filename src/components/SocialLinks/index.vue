@@ -46,14 +46,14 @@
         </Icon>
       </a>
       <a
-        id="bilibili"
-        :href="socialLinks.bilibili"
+        id="tikok"
+        :href="socialLinks.tikok"
         target="_blank"
         @mouseenter="changeTip"
         @mouseleave="leaveTip"
       >
         <Icon size="24">
-          <Bilibili />
+          <Tikok />
         </Icon>
       </a>
     </div>
@@ -63,7 +63,7 @@
 
 <script setup>
 import { ref, reactive } from "vue";
-import { Github, Qq, Telegram, Bilibili } from "@vicons/fa";
+import { Github, Qq, Telegram, Tiktok } from "@vicons/fa";
 import { EmailRound } from "@vicons/material";
 import { Icon } from "@vicons/utils";
 
@@ -75,7 +75,7 @@ let socialTipData = {
   qq: "有什么事吗",
   email: "来封 Email",
   telegram: "你懂的 ~",
-  bilibili: "你懂的 ~",
+  tiktok: "你懂的 ~",
 };
 
 // 社交链接地址
@@ -87,7 +87,7 @@ const socialLinks = reactive({
     "&site=qq&menu=yes",
   email: "mailto:" + import.meta.env.VITE_SOCIAL_EMAIL,
   telegram: "https://t.me/" + import.meta.env.VITE_SOCIAL_TELEGRAM,
-  bilobili: "https://space.bilibili.com/" + import.meta.env.VITE_SOCIAL_BILIBILI,
+  tiktok: "https://www.douyin.com/user/" + import.meta.env.VITE_SOCIAL_TIKTOK,
 });
 
 // 鼠标移入移出事件
@@ -106,8 +106,8 @@ const changeTip = (e) => {
     case "telegram":
       socialTip.value = socialTipData.telegram;
       return true;
-    case "bilibili":
-      socialTip.value = socialTipData.bilibili;
+    case "tiktok":
+      socialTip.value = socialTipData.tiktok;
       return true;
     default:
       return true;
