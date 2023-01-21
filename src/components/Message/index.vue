@@ -2,6 +2,7 @@
   <!-- 基本信息 -->
   <div class="message">
     <!-- Logo -->
+    <div class="logo">
       <div class="name">
         <span class="bg">{{ siteUrl[0] }}</span>
         <span class="sm">.{{ siteUrl[1] }}</span>
