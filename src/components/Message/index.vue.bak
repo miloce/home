@@ -2,6 +2,8 @@
   <!-- 基本信息 -->
   <div class="message">
     <!-- Logo -->
+    <div class="logo">
+      <img class="logo-img" src="https://q2.qlogo.cn/headimg_dl?dst_uin=2855595515&spec=100" alt="logo" />
       <div class="name">
         <span class="bg">{{ siteUrl[0] }}</span>
         <span class="sm">.{{ siteUrl[1] }}</span>
