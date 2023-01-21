@@ -15,7 +15,7 @@ export const mainStore = defineStore("main", {
             mobileOpenState: false, // 移动端开启状态
             mobileFuncState: false, // 移动端功能区开启状态
             setOpenState: false, // 设置页面开启状态
-            playerState: true, // 当前播放状态
+            playerState: false, // 当前播放状态
             playerTitle: null, // 当前播放歌曲名
             playerArtist: null, // 当前播放歌手名
             playerLrc: "歌词加载中", // 当前播放歌词
