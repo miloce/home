@@ -19,8 +19,9 @@
         >赣ICP备2023000781号-1</a
       >&nbsp;&amp;
       <!-- 网安备案 -->
-     <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=36010802000802" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="http://www.beian.gov.cn/img/ghs.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">赣公网安备 36010802000802号</p></a>
-    </div>
+      <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=36010802000802" target="_blank"
+        >赣公网安备 36010802000802号</a>
+      </div>
     <div class="lrc" v-show="store.playerState">
       <music-one theme="filled" size="18" fill="#efefef" />
       <span class="lrc-text">
