@@ -4,7 +4,7 @@
 简单的小主页，原来的看够了，重新弄了一个
 </p>
 
-![洛栀の主页](https://s2.loli.net/2022/07/14/K5JigfvDoNewtuS.webp)
+![洛栀の主页](./17010910183564.png)
 
 >主页的 Logo 字体已经过压缩，若用本站 Logo 以外的字母会变回默认字体，这里是 [完整字体](https://file.4everland.app/font/Other/Pacifico-Regular.ttf)
 
