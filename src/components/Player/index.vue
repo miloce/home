@@ -124,8 +124,8 @@ onMounted(() => {
         // 生成歌单
         res.forEach((v) => {
           playList.value.push({
-            title: v.name,
-            artist: v.artist,
+            title: v.title,
+            author: v.author,
             src: v.url,
             pic: v.pic,
             lrc: v.lrc,
@@ -154,10 +154,10 @@ const onPlay = () => {
   // 储存播放器信息
   store.setPlayerData(
     player.value.currentMusic.title,
-    player.value.currentMusic.artist
+    player.value.currentMusic.author
   );
   ElMessage({
-    message: store.getPlayerData.name + " - " + store.getPlayerData.artist,
+    message: store.getPlayerData.title + " - " + store.getPlayerData.author,
     grouping: true,
     icon: h(MusicOne, {
       theme: "filled",
