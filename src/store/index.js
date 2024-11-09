@@ -17,7 +17,7 @@ export const mainStore = defineStore("main", {
             setOpenState: false, // 设置页面开启状态
             playerState: false, // 当前播放状态
             playerTitle: null, // 当前播放歌曲名
-            playerArtist: null, // 当前播放歌手名
+            playerAuthor: null, // 当前播放歌手名
             playerLrc: "歌词加载中", // 当前播放歌词
         }
     },
@@ -29,8 +29,8 @@ export const mainStore = defineStore("main", {
         // 获取歌曲信息
         getPlayerData(state) {
             return {
-                name: state.playerTitle,
-                artist: state.playerArtist,
+                title: state.playerTitle,
+                author: state.playerAuthor,
             }
         },
         // 获取页面宽度
@@ -63,7 +63,7 @@ export const mainStore = defineStore("main", {
         // 更改歌曲数据
         setPlayerData(title, artist) {
             this.playerTitle = title;
-            this.playerArtist = artist;
+            this.playerAuthor = author;
         }
     },
     persist: {
