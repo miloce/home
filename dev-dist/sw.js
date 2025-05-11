@@ -39,7 +39,7 @@ if (!self.define) {
       .then(() => {
         let promise = registry[uri];
         if (!promise) {
-          throw new Error(`Module ${uri} didn’t register its module`);
+          throw new Error(`Module ${uri} didn't register its module`);
         }
         return promise;
       })
@@ -86,7 +86,7 @@ define(['./workbox-148cb7e5'], (function (workbox) { 'use strict';
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
-    allowlist: [/^\/$/]
+    allowlist: [/^\/THIS_IS_A_VERY_SPECIFIC_PATH_THAT_SHOULD_NOT_MATCH_ANYTHING\/$/]
   }));
 
 }));
