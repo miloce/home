@@ -14,7 +14,18 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 
 app.use(pinia);
-app.mount('#app')
+
+// 使用立即调用的异步函数实现懒加载挂载
+(async () => {
+  // 等待DOM内容加载完成
+  if (document.readyState !== 'loading') {
+    app.mount('#app');
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      app.mount('#app');
+    });
+  }
+})();
 
 // if ('serviceWorker' in navigator) {
 //     navigator.serviceWorker.register('/sw.js')

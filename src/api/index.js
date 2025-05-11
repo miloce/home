@@ -1,13 +1,46 @@
 // import axios from "axios";
 
+// fetch API 增强版，添加错误处理和超时控制
+const enhancedFetch = async (url, options = {}) => {
+    // 默认超时时间设置为10秒
+    const timeout = options.timeout || 10000;
+    
+    // 创建一个AbortController来处理超时
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        clearTimeout(timeoutId);
+        
+        if (error.name === 'AbortError') {
+            throw new Error(`请求超时: ${url}`);
+        }
+        
+        // 重新抛出原始错误或包装为更友好的错误
+        throw new Error(`请求失败: ${error.message}`);
+    }
+};
+
 /**
  * 音乐播放器
  */
 
 // 获取音乐播放列表
 export const getPlayerList = async (server, type, id) => {
-    const res = await fetch(`${import.meta.env.VITE_SONG_API}?server=${server}&type=${type}&id=${id}`);
-    return await res.json();
+    return await enhancedFetch(`${import.meta.env.VITE_SONG_API}?server=${server}&type=${type}&id=${id}`);
 }
 
 /**
@@ -16,23 +49,19 @@ export const getPlayerList = async (server, type, id) => {
 
 // 获取一言数据
 export const getHitokoto = async () => {
-    const res = await fetch("https://v1.hitokoto.cn");
-    return await res.json();
+    return await enhancedFetch("https://v1.hitokoto.cn");
 }
 
 /**
  * 天气
  */
 
-
 // 获取高德地理位置信息
 export const getAdcode = async (key) => {
-    const res = await fetch(`https://restapi.amap.com/v3/ip?key=${key}`);
-    return await res.json();
+    return await enhancedFetch(`https://restapi.amap.com/v3/ip?key=${key}`);
 }
 
 // 获取高德地理天气信息
 export const getWeather = async (key, city) => {
-    const res = await fetch(`https://restapi.amap.com/v3/weather/weatherInfo?key=${key}&city=${city}`);
-    return await res.json();
+    return await enhancedFetch(`https://restapi.amap.com/v3/weather/weatherInfo?key=${key}&city=${city}`);
 }

@@ -79,21 +79,29 @@ onMounted(() => {
     return false;
   };
 
-  // 鼠标中键事件
+  // 监听当前页面宽度
+  getWidth();
+  window.addEventListener("resize", getWidth);
+
+  // 鼠标中键事件 - 优化使用被动事件监听器提高性能
   window.addEventListener("mousedown", (event) => {
     if (event.button == 1) {
       store.backgroundShow = !store.backgroundShow;
       if (store.backgroundShow) {
-        ElMessage("已开启壁纸展示状态");
+        ElMessage({
+          message: "已开启壁纸展示状态",
+          grouping: true,
+          duration: 2000,
+        });
       } else {
-        ElMessage("已退出壁纸展示状态");
+        ElMessage({
+          message: "已退出壁纸展示状态",
+          grouping: true,
+          duration: 2000,
+        });
       }
     }
-  });
-
-  // 监听当前页面宽度
-  getWidth();
-  window.addEventListener("resize", getWidth);
+  }, { passive: true });
 
   // 控制台输出
   let styleTitle1 = "font-size: 20px;font-weight: 600;color: rgb(244,167,89);";

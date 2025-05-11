@@ -1,34 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="青年大学习专题页面">
+    <meta name="theme-color" content="#424242">
     <title>青年大学习</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/loading/loading.min.css">
     <style>
-        *{
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        img{
+        body {
+            background-color: #f5f5f5;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+        }
+        .container {
+            position: relative;
             width: 100vw;
             height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        img:hover {
+            transform: scale(1.02);
+        }
+        #loading-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s;
+        }
+        .loaded {
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
-<body>
-    <img src="" alt="" id="img">
+<body class="loading">
+    <!--加载动画-->
+    <div id="loading-box">
+        <div class="spinner-box">
+            <div class="loader">
+                <div class="inner one"></div>
+                <div class="inner two"></div>
+                <div class="inner three"></div>
+            </div>
+            <div class="loading-word">
+                <p class="loading-title">青年大学习</p>
+                <span id="loading-text">加载中</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <img src="" alt="青年大学习" id="img">
+    </div>
+
     <script>
-        axios({
-            url:'https://img.huangyuheng.top/api/daxuexi',
-            method:'get'
-        }).then((res)=>{
-            var img=document.querySelector('#img')
-            img.src=res.data.data.img
-            document.title=res.data.data.title
-        })
+        // 使用fetch代替axios，减少依赖
+        fetch('https://img.huangyuheng.top/api/daxuexi')
+            .then(response => response.json())
+            .then(data => {
+                const img = document.querySelector('#img');
+                img.src = data.data.img;
+                document.title = data.data.title;
+                
+                // 图片加载完成后移除加载动画
+                img.onload = () => {
+                    document.body.classList.remove('loading');
+                    document.getElementById('loading-box').classList.add('loaded');
+                };
+            })
+            .catch(error => {
+                console.error('获取数据失败:', error);
+                document.getElementById('loading-text').textContent = '加载失败，请刷新重试';
+            });
     </script>
 </body>
 </html>
