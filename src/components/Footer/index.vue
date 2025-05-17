@@ -69,11 +69,9 @@ footer {
     -webkit-animation: fade 0.3s;
     .lrc-text {
       margin: 0 8px;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
       overflow: hidden;
-      word-break: break-all;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
     .i-icon {
       width: 18px;
