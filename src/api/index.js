@@ -5,6 +5,51 @@ const enhancedFetch = async (url, options = {}) => {
     // 默认超时时间设置为10秒
     const timeout = options.timeout || 10000;
     
+    // 检查是否为JSONP请求
+    if(url.includes('output=jsonp')) {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'jsonp_' + Date.now() + Math.floor(Math.random() * 1000);
+            const script = document.createElement('script');
+            let timeoutId;
+            
+            // 设置全局回调函数
+            window[callbackName] = (data) => {
+                // 清除超时计时器
+                clearTimeout(timeoutId);
+                // 清理DOM和全局变量
+                document.body.removeChild(script);
+                delete window[callbackName];
+                resolve(data);
+            };
+            
+            // 处理超时
+            timeoutId = setTimeout(() => {
+                // 清理DOM和全局变量
+                document.body.removeChild(script);
+                delete window[callbackName];
+                reject(new Error(`请求超时: ${url}`));
+            }, timeout);
+            
+            // 处理脚本错误
+            script.onerror = () => {
+                // 清除超时计时器
+                clearTimeout(timeoutId);
+                // 清理DOM和全局变量
+                document.body.removeChild(script);
+                delete window[callbackName];
+                reject(new Error(`JSONP请求失败: ${url}`));
+            };
+            
+            // 添加callback参数到URL
+            const jsonpUrl = url.replace('callback=callback', `callback=${callbackName}`);
+            script.src = jsonpUrl;
+            
+            // 将脚本添加到DOM
+            document.body.appendChild(script);
+        });
+    }
+    
+    // 常规fetch请求
     // 创建一个AbortController来处理超时
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -58,10 +103,10 @@ export const getHitokoto = async () => {
 
 // 获取腾讯地图IP定位信息
 export const getAdcode = async (key) => {
-    return await enhancedFetch(`https://apis.map.qq.com/ws/location/v1/ip?key=${key}`);
+    return await enhancedFetch(`https://apis.map.qq.com/ws/location/v1/ip?key=${key}&output=jsonp&callback=callback`);
 }
 
 // 获取腾讯地图天气信息
 export const getWeather = async (key, adcode) => {
-    return await enhancedFetch(`https://apis.map.qq.com/ws/weather/v1/?key=${key}&adcode=${adcode}`);
+    return await enhancedFetch(`https://apis.map.qq.com/ws/weather/v1/?key=${key}&adcode=${adcode}&output=jsonp&callback=callback`);
 }

@@ -151,11 +151,14 @@ const onPlay = () => {
   console.log("播放");
   // 播放状态
   store.setPlayerState(player.value.audio.paused);
+  // 添加调试代码
+  console.log("CurrentMusic:", player.value.currentMusic);
   // 储存播放器信息
   store.setPlayerData(
     player.value.currentMusic.title,
     player.value.currentMusic.author
   );
+  console.log("Store数据:", store.getPlayerData);
   ElMessage({
     message: store.getPlayerData.title + " - " + store.getPlayerData.author,
     grouping: true,
