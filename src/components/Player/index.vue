@@ -51,35 +51,15 @@ let playIndex = ref(0);
 let playListCount = ref(0);
 
 // 配置项
+let autoplay = ref(false);
+let theme = ref("#efefef");
+let repeat = ref("all");
+let shuffle = ref(false);
+let listMaxHeight = ref("420px");
+let listFolded = ref(false);
+let volume = ref(store.musicVolume ? store.musicVolume : 0.7);
+
 const props = defineProps({
-  // 音频自动播放
-  autoplay: {
-    type: Boolean,
-    default: true
-  },
-  // 主题色
-  theme: {
-    type: String,
-    default: "#efefef",
-  },
-  // 音频循环播放
-  repeat: {
-    type: String,
-    default: "list", //'list' | 'music' | 'none'
-  },
-  // 随机播放
-  shuffle: {
-    type: Boolean,
-    default: false,
-  },
-  // 默认音量
-  volume: {
-    type: Number,
-    default: 0.7,
-    validator: (value) => {
-      return value >= 0 && value <= 1;
-    },
-  },
   // 歌曲服务器 ( netease-网易云, tencent-qq音乐, kugou-酷狗, xiami-小米音乐, baidu-百度音乐 )
   songServer: {
     type: String,
@@ -95,20 +75,20 @@ const props = defineProps({
     type: String,
     default: "7418767218",
   },
-  // 列表是否默认折叠
-  listFolded: {
-    type: Boolean,
-    default: false,
-  },
-  // 列表最大高度
-  listMaxHeight: {
-    type: String,
-    default: "420px",
-  },
 });
 
-// 初始化播放器
-onMounted(() => {
+// 添加用户交互检测
+const enableAutoplay = () => {
+  // 用户交互后启用自动播放
+  document.removeEventListener('click', enableAutoplay);
+  document.removeEventListener('keydown', enableAutoplay);
+  if (player.value && playList.value.length > 0) {
+    player.value.play();
+  }
+};
+
+// 获取音乐列表
+const getMusicList = () => {
   nextTick(() => {
     getPlayerList(props.songServer, props.songType, props.songId)
       .then((res) => {
@@ -121,8 +101,7 @@ onMounted(() => {
           "音乐加载完成",
           res,
           playIndex.value,
-          playListCount.value,
-          props.volume
+          playListCount.value
         );
         // 生成歌单
         res.forEach((v) => {
@@ -151,6 +130,21 @@ onMounted(() => {
         });
       });
   });
+};
+
+onMounted(() => {
+  // 监听用户交互来启用自动播放
+  document.addEventListener('click', enableAutoplay);
+  document.addEventListener('keydown', enableAutoplay);
+  
+  // 获取音乐列表
+  getMusicList();
+});
+
+onBeforeUnmount(() => {
+  // 清除事件监听
+  document.removeEventListener('click', enableAutoplay);
+  document.removeEventListener('keydown', enableAutoplay);
 });
 
 // 播放暂停事件
