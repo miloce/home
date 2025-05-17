@@ -2,8 +2,8 @@
   <aplayer
     showLrc
     ref="player"
-    v-if="playList[0]"
-    :music="playList[playIndex]"
+    v-if="playList.length > 0 && isPlayerReady"
+    :music="currentMusic"
     :list="playList"
     :autoplay="autoplay"
     :theme="theme"
@@ -41,14 +41,18 @@ import {
   onMounted,
   onBeforeUnmount,
   watch,
+  computed
 } from "vue";
 import { getPlayerList } from "@/api";
 import { mainStore } from "@/store";
+import { safeGet } from "@/utils/index.js";
 
 const store = mainStore();
 
 // 获取播放器 DOM
 const player = ref(null);
+// 播放器是否准备就绪
+const isPlayerReady = ref(false);
 
 // 歌曲播放列表
 let playList = ref([]);
@@ -57,6 +61,20 @@ let playerLrc = ref("");
 // 歌曲播放项
 let playIndex = ref(0);
 let playListCount = ref(0);
+
+// 计算当前音乐，带有默认值处理
+const currentMusic = computed(() => {
+  if (playList.value.length === 0 || playIndex.value < 0 || playIndex.value >= playList.value.length) {
+    return {
+      title: "加载中...",
+      author: "未知歌手",
+      src: "",
+      pic: "https://p2.music.126.net/MITr2Veg1BTqyxuI73jnbg==/109951165628210978.jpg", // 默认封面
+      lrc: ""
+    };
+  }
+  return playList.value[playIndex.value];
+});
 
 // 配置项
 const props = defineProps({
@@ -128,6 +146,11 @@ const processInBatches = (array, batchSize, processFunction) => {
     if (index < array.length) {
       // 使用requestAnimationFrame确保UI响应性
       requestAnimationFrame(processBatch);
+    } else {
+      // 数据处理完成，标记播放器准备就绪
+      setTimeout(() => {
+        isPlayerReady.value = true;
+      }, 300);
     }
   }
   
@@ -139,29 +162,29 @@ onMounted(() => {
   nextTick(() => {
     getPlayerList(props.songServer, props.songType, props.songId)
       .then((res) => {
+        // 检查返回数据有效性
+        if (!res || !Array.isArray(res) || res.length === 0) {
+          throw new Error('音乐列表数据无效');
+        }
+        
         // 生成歌单信息
         playIndex.value = Math.floor(Math.random() * res.length);
         playListCount.value = res.length;
         // 更改播放器加载状态
         store.musicIsOk = true;
-        console.log(
-          "音乐加载完成",
-          res,
-          playIndex.value,
-          playListCount.value,
-          props.volume
-        );
         
         // 使用分批处理来处理歌单数据
         processInBatches(res, 10, (v) => {
-          playList.value.push({
-            title: v.title,
+          // 确保必要的字段存在
+          const item = {
+            title: v.title || "未知歌曲",
             author: v.author || "未知歌手",
             artist: v.author || "未知歌手", 
-            src: v.url,
-            pic: v.pic,
-            lrc: v.lrc,
-          });
+            src: v.url || "",
+            pic: v.pic || "https://p2.music.126.net/MITr2Veg1BTqyxuI73jnbg==/109951165628210978.jpg",
+            lrc: v.lrc || ""
+          };
+          playList.value.push(item);
         });
       })
       .catch((error) => {
@@ -181,65 +204,115 @@ onMounted(() => {
 
 // 播放暂停事件
 const onPlay = () => {
-  // 播放状态
-  store.setPlayerState(player.value.audio.paused);
-  // 储存播放器信息
-  store.setPlayerData(
-    player.value.currentMusic.title,
-    player.value.currentMusic.author
-  );
-  ElMessage({
-    message: store.getPlayerData.title + " - " + store.getPlayerData.author,
-    grouping: true,
-    icon: h(MusicOne, {
-      theme: "filled",
-      fill: "#efefef",
-    }),
-  });
+  try {
+    // 安全检查
+    if (!player.value || !player.value.audio) return;
+    
+    // 播放状态
+    store.setPlayerState(player.value.audio.paused);
+    
+    // 储存播放器信息 - 安全获取
+    const title = safeGet(player.value, 'currentMusic.title', '未知歌曲');
+    const author = safeGet(player.value, 'currentMusic.author', '未知歌手');
+    
+    store.setPlayerData(title, author);
+    
+    ElMessage({
+      message: store.getPlayerData.title + " - " + store.getPlayerData.author,
+      grouping: true,
+      icon: h(MusicOne, {
+        theme: "filled",
+        fill: "#efefef",
+      }),
+    });
+  } catch (error) {
+    console.error("播放事件处理错误:", error);
+  }
 };
+
 const onPause = () => {
-  store.setPlayerState(player.value.audio.paused);
+  try {
+    if (player.value && player.value.audio) {
+      store.setPlayerState(player.value.audio.paused);
+    }
+  } catch (error) {
+    console.error("暂停事件处理错误:", error);
+  }
 };
 
 // 音频时间更新事件
 const onTimeUp = () => {
-  let playerRef = player.value.$.vnode.el;
-  if (playerRef) {
-    const lrcElement = playerRef.getElementsByClassName("aplayer-lrc-current")[0];
-    if (lrcElement) {
-      playerLrc.value = lrcElement.innerHTML;
-      store.setPlayerLrc(playerLrc.value);
+  try {
+    if (!player.value || !player.value.$) return;
+    
+    let playerRef = player.value.$.vnode.el;
+    if (playerRef) {
+      const lrcElement = playerRef.getElementsByClassName("aplayer-lrc-current")[0];
+      if (lrcElement) {
+        playerLrc.value = lrcElement.innerHTML;
+        store.setPlayerLrc(playerLrc.value);
+      }
     }
+  } catch (error) {
+    console.error("时间更新事件处理错误:", error);
   }
 };
 
 // 切换播放暂停事件
 const playToggle = () => {
-  player.value.toggle();
+  try {
+    if (player.value) {
+      player.value.toggle();
+    }
+  } catch (error) {
+    console.error("播放切换错误:", error);
+  }
 };
 
 // 切换音量事件
 const changeVolume = (value) => {
-  player.value.audio.volume = value;
+  try {
+    if (player.value && player.value.audio) {
+      player.value.audio.volume = value;
+    }
+  } catch (error) {
+    console.error("音量调节错误:", error);
+  }
 };
 
 const onSelectSong = (val) => {
-  console.log(val);
+  try {
+    if (val && typeof val === 'number') {
+      playIndex.value = val;
+    }
+  } catch (error) {
+    console.error("选择歌曲错误:", error);
+  }
 };
 
 // 切换上下曲
 const changeSong = (type) => {
-  playIndex.value = player.value.playIndex;
-  playIndex.value += type ? 1 : -1;
-  // 判断是否处于最后/第一首
-  if (playIndex.value < 0) {
-    playIndex.value = playListCount.value - 1;
-  } else if (playIndex.value >= playListCount.value) {
-    playIndex.value = 0;
+  try {
+    if (!player.value) return;
+    
+    playIndex.value = player.value.playIndex || 0;
+    playIndex.value += type ? 1 : -1;
+    
+    // 判断是否处于最后/第一首
+    if (playIndex.value < 0) {
+      playIndex.value = playListCount.value - 1;
+    } else if (playIndex.value >= playListCount.value) {
+      playIndex.value = 0;
+    }
+    
+    nextTick(() => {
+      if (player.value) {
+        player.value.play();
+      }
+    });
+  } catch (error) {
+    console.error("切换歌曲错误:", error);
   }
-  nextTick(() => {
-    player.value.play();
-  });
 };
 
 // 暴露子组件方法
