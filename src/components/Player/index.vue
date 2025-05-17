@@ -12,6 +12,9 @@
     :listMaxHeight="listMaxHeight"
     :listFolded="listFolded"
     :volume="volume"
+    authorKey="author"
+    titleKey="title"
+    :customLanguage="{unknown: '未知歌手'}"
     @play="onPlay"
     @pause="onPause"
     @timeupdate="onTimeUp"
@@ -123,14 +126,18 @@ onMounted(() => {
         );
         // 生成歌单
         res.forEach((v) => {
+          console.log("歌曲作者信息:", v.author);
           playList.value.push({
             title: v.title,
-            author: v.author,
+            author: v.author || "未知歌手",
+            artist: v.author || "未知歌手",
             src: v.url,
             pic: v.pic,
             lrc: v.lrc,
           });
         });
+        // 打印完整的播放列表数据
+        console.log("完整歌单数据:", JSON.stringify(playList.value));
       })
       .catch(() => {
         store.musicIsOk = false;
