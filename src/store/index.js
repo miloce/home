@@ -63,7 +63,7 @@ export const mainStore = defineStore("main", {
         // 更改歌曲数据
         setPlayerData(title, artist) {
             this.playerTitle = title;
-            this.playerAuthor = author;
+            this.playerAuthor = artist;
         }
     },
     persist: {
