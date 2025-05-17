@@ -53,19 +53,19 @@ let linksData = [
     link: "https://check.luozhinet.com/",
   },
   {
-    icon: CompactDisc,
-    name: "音乐",
-    link: "https://music.luozhinet.com/",
+    icon: Running,
+    name: "步数",
+    link: "https://steps.luozhinet.com/",
   },
   {
-    icon: Compass,
+    icon: Hubspot,
     name: "API",
     link: "https://api.luozhinet.com/",
   },
   {
-    icon: Book,
-    name: "网址集",
-    link: "https://web.luozhinet.com/",
+    icon: Cat,
+    name: "赞助页",
+    link: "https://sponsor.luozhinet.com/",
   },
   {
     icon: Flask,
