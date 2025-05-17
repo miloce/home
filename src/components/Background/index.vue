@@ -22,32 +22,13 @@ const store = mainStore();
 
 let bgUrl = ref(null); // 壁纸链接
 
-// 获取必应壁纸
-const fetchBingWallpaper = async () => {
-  try {
-    const response = await fetch("https://api.luozhinet.com/bing?cn=true");
-    const data = await response.json();
-    if (data && data.code === 200 && data.cover && data.cover.length > 0) {
-      // 优先使用中国区域的链接
-      bgUrl.value = data.cover[0];
-    } else {
-      // 如果API请求失败，使用默认壁纸
-      bgUrl.value = `/images/background${Math.floor(Math.random() * 10 + 1)}.webp`;
-    }
-  } catch (error) {
-    console.error("获取壁纸失败:", error);
-    // 出错时使用默认壁纸
-    bgUrl.value = `/images/background${Math.floor(Math.random() * 10 + 1)}.webp`;
-  }
-};
-
 const changeBg = (type) => {
   if (type == 0) {
     bgUrl.value = `/images/background${Math.floor(
       Math.random() * 10 + 1
     )}.webp`;
   } else if (type == 1) {
-    fetchBingWallpaper();
+    bgUrl.value = "https://api.dujin.org/bing/1920.php";
   }
 };
 
