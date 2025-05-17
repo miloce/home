@@ -61,9 +61,9 @@ export const mainStore = defineStore("main", {
             this.playerLrc = value;
         },
         // 更改歌曲数据
-        setPlayerData(title, artist) {
+        setPlayerData(title, author) {
             this.playerTitle = title;
-            this.playerAuthor = artist;
+            this.playerAuthor = author;
         }
     },
     persist: {
