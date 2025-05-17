@@ -42,7 +42,7 @@
       <div class="name" v-show="!volumeShow">
         <span>{{
           store.getPlayerData.name
-            ? store.getPlayerData.name + " - " + store.getPlayerData.artist
+            ? store.getPlayerData.name + " - " + store.getPlayerData.author
             : "未播放音乐"
         }}</span>
       </div>

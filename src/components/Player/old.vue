@@ -25,14 +25,14 @@ const state = reactive({
 });
 const playerData = reactive({
   name: null,
-  artist: null,
+  author: null,
   lrc: null,
 });
 
 // APlayer歌曲信息
 class Audio {
   // 音频艺术家
-  // artist: String;
+  // author: String;
   // 音频名称
   // name: String;
   // 音频链接
@@ -42,8 +42,8 @@ class Audio {
   // 歌词
   // lrc: String;
 
-  constructor(artist, name, url, cover, lrc) {
-    this.artist = artist;
+  constructor(author, name, url, cover, lrc) {
+    this.author = author;
     this.name = name;
     this.url = url;
     this.cover = cover;
@@ -100,7 +100,7 @@ const props = defineProps({
     type: String,
     default: "netease", //'netease' | 'tencent' | 'kugou' | 'xiami' | 'baidu'
   },
-  // 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家 )
+  // 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, author-艺术家 )
   songType: {
     type: String,
     default: "playlist",
@@ -148,7 +148,7 @@ onMounted(() => {
         console.log("音乐加载完成");
         let audioList = res.map(
           (value) =>
-            new Audio(value.artist, value.name, value.url, value.pic, value.lrc)
+            new Audio(value.author, value.name, value.url, value.pic, value.lrc)
         );
         state.instance = new APlayer({
           container: playerRef.value,
@@ -182,7 +182,7 @@ onMounted(() => {
           );
           ElMessage({
             message:
-              store.getPlayerData.name + " - " + store.getPlayerData.artist,
+              store.getPlayerData.name + " - " + store.getPlayerData.author,
             grouping: true,
             icon: h(MusicOne, {
               theme: "filled",

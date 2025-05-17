@@ -82,7 +82,7 @@ const props = defineProps({
     type: String,
     default: "netease", //'netease' | 'tencent' | 'kugou' | 'xiami' | 'baidu'
   },
-  // 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家 )
+  // 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, author-艺术家 )
   songType: {
     type: String,
     default: "playlist",

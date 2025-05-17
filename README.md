@@ -57,7 +57,7 @@ yarn build
 VITE_SONG_API = "https://api-meting.luozhinet.com"
 # 歌曲服务器 ( netease-网易云, tencent-qq音乐 )
 VITE_SONG_SERVER = "netease"
-# 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家 )
+# 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, author-艺术家 )
 VITE_SONG_TYPE = "playlist"
 # 播放 ID
 VITE_SONG_ID = "7452421335"
