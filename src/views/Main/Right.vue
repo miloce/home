@@ -1,5 +1,5 @@
 <template>
-  <div :class="store.mobileOpenState ? 'right' : 'right hidden'">
+  <div :class="store.mobileOpenState ? 'right hidden' : 'right'">
     <!-- 移动端 Logo -->
     <div class="logo" @click="store.mobileFuncState = !store.mobileFuncState">
       <span class="bg">{{ siteUrl[0] }}</span>
