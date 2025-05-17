@@ -36,8 +36,3 @@ app.use(pinia);
 //             console.log('Failed to register service worker: ', err);
 //         });
 // }
-
-// 添加全局passive event listener来解决Chrome警告
-document.addEventListener('touchstart', function() {}, { passive: true });
-document.addEventListener('touchmove', function() {}, { passive: true });
-document.addEventListener('touchend', function() {}, { passive: true });

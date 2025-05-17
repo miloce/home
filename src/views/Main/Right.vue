@@ -7,8 +7,8 @@
     </div>
     <!-- 功能区 -->
     <Func />
-    <!-- 网站链接
-    <Link />  -->
+    <!-- 网站链接 -->
+    <Links />
   </div>
 </template>
 
@@ -16,7 +16,7 @@
 import { reactive, ref, onMounted } from "vue";
 import { mainStore } from "@/store";
 import Func from "@/views/Func/index.vue";
-import Link from "@/components/Links/index.vue";
+import Links from "@/components/Links/index.vue";
 const store = mainStore();
 
 // 站点链接
