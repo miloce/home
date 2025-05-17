@@ -43,22 +43,14 @@ import Weather from "@/components/Weather/index.vue";
 const store = mainStore();
 
 // 当前时间
-let currentTime = ref(getCurrentTime());
+let currentTime = ref({});
 let timeInterval = null;
 
 onMounted(() => {
-  // 初始化时间
-  updateTime();
-  
-  // 智能时间更新：秒针每秒更新，其他只在变化时更新
-  timeInterval = setInterval(updateTime, 1000);
+  timeInterval = setInterval(() => {
+    currentTime.value = getCurrentTime();
+  }, 1000);
 });
-
-// 优化时间更新函数
-const updateTime = () => {
-  const newTime = getCurrentTime();
-  currentTime.value = newTime;
-};
 
 onBeforeUnmount(() => {
   clearInterval(timeInterval);

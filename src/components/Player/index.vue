@@ -2,8 +2,8 @@
   <aplayer
     showLrc
     ref="player"
-    v-if="playList.length > 0 && isPlayerReady"
-    :music="currentMusic"
+    v-if="playList[0]"
+    :music="playList[playIndex]"
     :list="playList"
     :autoplay="autoplay"
     :theme="theme"
@@ -20,14 +20,6 @@
     @timeupdate="onTimeUp"
     @onSelectSong="onSelectSong"
   />
-  <div v-else class="player-loading">
-    <div class="loading-indicator">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-    <div class="loading-text">音乐列表加载中...</div>
-  </div>
 </template>
  
 <script setup>
@@ -41,18 +33,14 @@ import {
   onMounted,
   onBeforeUnmount,
   watch,
-  computed
 } from "vue";
 import { getPlayerList } from "@/api";
 import { mainStore } from "@/store";
-import { safeGet } from "@/utils/index.js";
 
 const store = mainStore();
 
 // 获取播放器 DOM
 const player = ref(null);
-// 播放器是否准备就绪
-const isPlayerReady = ref(false);
 
 // 歌曲播放列表
 let playList = ref([]);
@@ -61,20 +49,6 @@ let playerLrc = ref("");
 // 歌曲播放项
 let playIndex = ref(0);
 let playListCount = ref(0);
-
-// 计算当前音乐，带有默认值处理
-const currentMusic = computed(() => {
-  if (playList.value.length === 0 || playIndex.value < 0 || playIndex.value >= playList.value.length) {
-    return {
-      title: "加载中...",
-      author: "未知歌手",
-      src: "",
-      pic: "https://p2.music.126.net/MITr2Veg1BTqyxuI73jnbg==/109951165628210978.jpg", // 默认封面
-      lrc: ""
-    };
-  }
-  return playList.value[playIndex.value];
-});
 
 // 配置项
 const props = defineProps({
@@ -133,62 +107,39 @@ const props = defineProps({
   },
 });
 
-// 延迟加载函数 - 分批处理数据
-const processInBatches = (array, batchSize, processFunction) => {
-  let index = 0;
-  
-  function processBatch() {
-    const batch = array.slice(index, index + batchSize);
-    batch.forEach(processFunction);
-    
-    index += batchSize;
-    
-    if (index < array.length) {
-      // 使用requestAnimationFrame确保UI响应性
-      requestAnimationFrame(processBatch);
-    } else {
-      // 数据处理完成，标记播放器准备就绪
-      setTimeout(() => {
-        isPlayerReady.value = true;
-      }, 300);
-    }
-  }
-  
-  processBatch();
-};
-
 // 初始化播放器
 onMounted(() => {
   nextTick(() => {
     getPlayerList(props.songServer, props.songType, props.songId)
       .then((res) => {
-        // 检查返回数据有效性
-        if (!res || !Array.isArray(res) || res.length === 0) {
-          throw new Error('音乐列表数据无效');
-        }
-        
         // 生成歌单信息
         playIndex.value = Math.floor(Math.random() * res.length);
         playListCount.value = res.length;
         // 更改播放器加载状态
         store.musicIsOk = true;
-        
-        // 使用分批处理来处理歌单数据
-        processInBatches(res, 10, (v) => {
-          // 确保必要的字段存在
-          const item = {
-            title: v.title || "未知歌曲",
+        console.log(
+          "音乐加载完成",
+          res,
+          playIndex.value,
+          playListCount.value,
+          props.volume
+        );
+        // 生成歌单
+        res.forEach((v) => {
+          console.log("歌曲作者信息:", v.author);
+          playList.value.push({
+            title: v.title,
             author: v.author || "未知歌手",
-            artist: v.author || "未知歌手", 
-            src: v.url || "",
-            pic: v.pic || "https://p2.music.126.net/MITr2Veg1BTqyxuI73jnbg==/109951165628210978.jpg",
-            lrc: v.lrc || ""
-          };
-          playList.value.push(item);
+            artist: v.author || "未知歌手",
+            src: v.url,
+            pic: v.pic,
+            lrc: v.lrc,
+          });
         });
+        // 打印完整的播放列表数据
+        console.log("完整歌单数据:", JSON.stringify(playList.value));
       })
-      .catch((error) => {
-        console.error("播放器加载失败:", error);
+      .catch(() => {
         store.musicIsOk = false;
         ElMessage({
           message: "播放器加载失败",
@@ -204,115 +155,69 @@ onMounted(() => {
 
 // 播放暂停事件
 const onPlay = () => {
-  try {
-    // 安全检查
-    if (!player.value || !player.value.audio) return;
-    
-    // 播放状态
-    store.setPlayerState(player.value.audio.paused);
-    
-    // 储存播放器信息 - 安全获取
-    const title = safeGet(player.value, 'currentMusic.title', '未知歌曲');
-    const author = safeGet(player.value, 'currentMusic.author', '未知歌手');
-    
-    store.setPlayerData(title, author);
-    
-    ElMessage({
-      message: store.getPlayerData.title + " - " + store.getPlayerData.author,
-      grouping: true,
-      icon: h(MusicOne, {
-        theme: "filled",
-        fill: "#efefef",
-      }),
-    });
-  } catch (error) {
-    console.error("播放事件处理错误:", error);
-  }
+  console.log("播放");
+  // 播放状态
+  store.setPlayerState(player.value.audio.paused);
+  // 添加调试代码
+  console.log("CurrentMusic:", player.value.currentMusic);
+  // 储存播放器信息
+  store.setPlayerData(
+    player.value.currentMusic.title,
+    player.value.currentMusic.author
+  );
+  console.log("Store数据:", store.getPlayerData);
+  ElMessage({
+    message: store.getPlayerData.title + " - " + store.getPlayerData.author,
+    grouping: true,
+    icon: h(MusicOne, {
+      theme: "filled",
+      fill: "#efefef",
+    }),
+  });
 };
-
 const onPause = () => {
-  try {
-    if (player.value && player.value.audio) {
-      store.setPlayerState(player.value.audio.paused);
-    }
-  } catch (error) {
-    console.error("暂停事件处理错误:", error);
-  }
+  store.setPlayerState(player.value.audio.paused);
 };
 
 // 音频时间更新事件
 const onTimeUp = () => {
-  try {
-    if (!player.value || !player.value.$) return;
-    
-    let playerRef = player.value.$.vnode.el;
-    if (playerRef) {
-      const lrcElement = playerRef.getElementsByClassName("aplayer-lrc-current")[0];
-      if (lrcElement) {
-        playerLrc.value = lrcElement.innerHTML;
-        store.setPlayerLrc(playerLrc.value);
-      }
-    }
-  } catch (error) {
-    console.error("时间更新事件处理错误:", error);
+  let playerRef = player.value.$.vnode.el;
+  if (playerRef) {
+    playerLrc.value = playerRef.getElementsByClassName(
+      "aplayer-lrc-current"
+    )[0].innerHTML;
+    store.setPlayerLrc(playerLrc.value);
   }
 };
 
 // 切换播放暂停事件
 const playToggle = () => {
-  try {
-    if (player.value) {
-      player.value.toggle();
-    }
-  } catch (error) {
-    console.error("播放切换错误:", error);
-  }
+  player.value.toggle();
 };
 
 // 切换音量事件
 const changeVolume = (value) => {
-  try {
-    if (player.value && player.value.audio) {
-      player.value.audio.volume = value;
-    }
-  } catch (error) {
-    console.error("音量调节错误:", error);
-  }
+  player.value.audio.volume = value;
 };
 
 const onSelectSong = (val) => {
-  try {
-    if (val && typeof val === 'number') {
-      playIndex.value = val;
-    }
-  } catch (error) {
-    console.error("选择歌曲错误:", error);
-  }
+  console.log(val);
 };
 
 // 切换上下曲
 const changeSong = (type) => {
-  try {
-    if (!player.value) return;
-    
-    playIndex.value = player.value.playIndex || 0;
-    playIndex.value += type ? 1 : -1;
-    
-    // 判断是否处于最后/第一首
-    if (playIndex.value < 0) {
-      playIndex.value = playListCount.value - 1;
-    } else if (playIndex.value >= playListCount.value) {
-      playIndex.value = 0;
-    }
-    
-    nextTick(() => {
-      if (player.value) {
-        player.value.play();
-      }
-    });
-  } catch (error) {
-    console.error("切换歌曲错误:", error);
+  playIndex.value = player.value.playIndex;
+  playIndex.value += type ? 1 : -1;
+  // 判断是否处于最后/第一首
+  if (playIndex.value < 0) {
+    playIndex.value = playListCount.value - 1;
+  } else if (playIndex.value >= playListCount.value) {
+    playIndex.value = 0;
   }
+  // console.log(playIndex.value, playList.value[playIndex.value]);
+  nextTick(() => {
+    player.value.play();
+  });
 };
 
 // 暴露子组件方法
@@ -320,57 +225,6 @@ defineExpose({ playToggle, changeVolume, changeSong });
 </script>
  
 <style lang='scss' scoped>
-// 加载动画
-.player-loading {
-  width: 80%;
-  height: 60px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #ffffff20;
-  backdrop-filter: blur(5px);
-  border-radius: 6px;
-  
-  .loading-indicator {
-    display: flex;
-    gap: 5px;
-    
-    span {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: #efefef;
-      animation: bounce 1.4s infinite ease-in-out both;
-      
-      &:nth-child(1) {
-        animation-delay: -0.32s;
-      }
-      
-      &:nth-child(2) {
-        animation-delay: -0.16s;
-      }
-    }
-  }
-  
-  .loading-text {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #efefef;
-    opacity: 0.8;
-  }
-  
-  @keyframes bounce {
-    0%, 80%, 100% {
-      transform: scale(0);
-    }
-    40% {
-      transform: scale(1);
-    }
-  }
-}
-
 .aplayer {
   width: 80%;
   background: transparent;
@@ -383,7 +237,6 @@ defineExpose({ playToggle, changeVolume, changeSong });
       margin-left: 0;
       background-color: #ffffff40;
       border-color: transparent;
-      backdrop-filter: blur(5px);
       .aplayer-music {
         flex-grow: initial;
         margin-bottom: 2px;
@@ -396,40 +249,58 @@ defineExpose({ playToggle, changeVolume, changeSong });
           color: #efefef;
         }
       }
-    }
-  }
-  
-  // 移动端优化
-  @media (max-width: 720px) {
-    width: 100%;
-    :deep(.aplayer-body) {
-      .aplayer-info {
-        padding: 12px 7px 0;
-        
-        .aplayer-music {
-          .aplayer-title {
-            font-size: 14px;
-          }
-          .aplayer-author {
-            font-size: 12px;
-          }
+      .aplayer-lrc {
+        text-align: left;
+        margin: 4px 0 6px 6px;
+        height: 100%;
+        mask: linear-gradient(
+          #fff 15%,
+          #fff 85%,
+          hsla(0deg, 0%, 100%, 0.6) 90%,
+          hsla(0deg, 0%, 100%, 0)
+        );
+        -webkit-mask: linear-gradient(
+          #fff 15%,
+          #fff 85%,
+          hsla(0deg, 0%, 100%, 0.6) 90%,
+          hsla(0deg, 0%, 100%, 0)
+        );
+        &::before,
+        &::after {
+          display: none;
         }
-        
-        .aplayer-controller {
-          .aplayer-bar-wrap {
-            margin: 0 0 0 5px;
-          }
+        p {
+          color: #efefef;
+        }
+        .aplayer-lrc-current {
+          font-size: 0.95rem;
+          margin-bottom: 4px !important;
         }
       }
-      
-      .aplayer-list {
-        max-height: 300px !important;
-        
-        ol li {
-          .aplayer-list-author {
-            font-size: 12px;
-            color: #efefef !important;
-          }
+      .aplayer-controller {
+        display: none;
+      }
+    }
+  }
+  :deep(.aplayer-list) {
+    margin-top: 6px;
+    ol {
+      &::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+      li {
+        border-color: transparent;
+        &.aplayer-list-light {
+          background: #ffffff40;
+          border-radius: 6px;
+        }
+        &:hover {
+          background: #ffffff26 !important;
+          border-radius: 6px !important;
+        }
+        .aplayer-list-index,
+        .aplayer-list-author {
+          color: #efefef;
         }
       }
     }

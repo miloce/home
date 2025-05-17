@@ -1,13 +1,5 @@
 <template>
-  <!-- 页面加载进度指示器 -->
-  <div class="loading-progress" v-if="!loadingComplete">
-    <div class="progress-bar">
-      <div class="progress-inner" :style="{ width: `${loadingProgress}%` }"></div>
-    </div>
-    <div class="progress-text">加载中... {{ loadingProgress }}%</div>
-  </div>
-
-  <div class="animate" v-show="loadingComplete">
+  <div class="animate">
     <Background />
     <main>
       <div class="container" v-show="!store.backgroundShow">
@@ -37,7 +29,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { onMounted, onBeforeUnmount, watch } from "vue";
 import { helloInit, checkDays } from "@/utils/getTime.js";
 import { mainStore } from "@/store";
 import { Icon } from "@vicons/utils";
@@ -50,40 +42,17 @@ import Box from "@/views/Box/index.vue";
 import MoreSet from "@/views/MoreSet/index.vue";
 import cursorInit from "@/utils/cursor.js";
 import config from "@/../package.json";
-import { throttle, lazyLoadImages } from "@/utils/index.js";
 // 新春灯笼
 //import "@/utils/lantern.js";
 
 const store = mainStore();
-const loadingProgress = ref(0);
-const loadingComplete = ref(false);
 
-// 页面加载进度模拟
-const simulateLoading = () => {
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress += Math.floor(Math.random() * 10) + 1;
-    if (progress >= 100) {
-      progress = 100;
-      clearInterval(interval);
-      // 给完成状态一点延迟，确保进度条有完成的视觉效果
-      setTimeout(() => {
-        loadingComplete.value = true;
-      }, 300);
-    }
-    loadingProgress.value = progress;
-  }, 200);
+// 页面宽度
+const getWidth = () => {
+  store.setInnerWidth(window.innerWidth);
 };
 
-// 使用节流函数优化窗口大小调整事件
-const getWidth = throttle(() => {
-  store.setInnerWidth(window.innerWidth);
-}, 150);
-
 onMounted(() => {
-  // 模拟加载进度
-  simulateLoading();
-  
   // 自定义鼠标
   cursorInit();
   // 欢迎提示
@@ -93,23 +62,12 @@ onMounted(() => {
   // 加载完成事件
   window.addEventListener("load", () => {
     console.log("加载完成");
-    loadingComplete.value = true;
-    loadingProgress.value = 100;
-    
     // 去除加载标记
     document.getElementsByTagName("body")[0].className = "";
     // 给加载动画添加结束标记
     let loadingBox = document.getElementById("loading-box");
-    if (loadingBox) {
-      loadingBox.classList.add("loaded");
-    }
-    
-    // 页面加载完成后执行懒加载
-    lazyLoadImages();
+    loadingBox.classList.add("loaded");
   });
-
-  // 优化图片加载
-  lazyLoadImages();
 
   // 屏蔽右键
   document.oncontextmenu = () => {
@@ -123,7 +81,7 @@ onMounted(() => {
 
   // 监听当前页面宽度
   getWidth();
-  window.addEventListener("resize", getWidth, { passive: true });
+  window.addEventListener("resize", getWidth);
 
   // 鼠标中键事件 - 优化使用被动事件监听器提高性能
   window.addEventListener("mousedown", (event) => {
@@ -182,44 +140,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-// 加载进度条样式
-.loading-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #121212;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  
-  .progress-bar {
-    width: 80%;
-    max-width: 400px;
-    height: 6px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    
-    .progress-inner {
-      height: 100%;
-      background: linear-gradient(90deg, #8A2BE2, #FF1493);
-      border-radius: 3px;
-      transition: width 0.3s ease-out;
-    }
-  }
-  
-  .progress-text {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    font-family: "UnidreamLED", monospace;
-  }
-}
-
 main {
   .container {
     width: 100%;
