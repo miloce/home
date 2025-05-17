@@ -25,14 +25,17 @@ app.use(pinia);
       app.mount('#app');
     });
   }
+  
+  // 注册 Service Worker，提供离线访问和性能优化
+  if ('serviceWorker' in navigator) {
+    try {
+      // 在页面加载完成后注册 Service Worker 可以改善首次加载性能
+      window.addEventListener('load', async () => {
+        const registration = await navigator.serviceWorker.register('/service-worker.js');
+        console.log('Service Worker 注册成功:', registration.scope);
+      });
+    } catch (error) {
+      console.error('Service Worker 注册失败:', error);
+    }
+  }
 })();
-
-// if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('/sw.js')
-//         .then(() => {
-//             console.log('Service worker registered.');
-//         })
-//         .catch(err => {
-//             console.log('Failed to register service worker: ', err);
-//         });
-// }
