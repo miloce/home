@@ -1,5 +1,5 @@
 <template>
-  <div :class="store.mobileOpenState ? 'right hidden' : 'right'">
+  <div :class="store.mobileOpenState ? 'right' : 'right hidden'">
     <!-- 移动端 Logo -->
     <div class="logo" @click="store.mobileFuncState = !store.mobileFuncState">
       <span class="bg">{{ siteUrl[0] }}</span>
@@ -7,8 +7,8 @@
     </div>
     <!-- 功能区 -->
     <Func />
-    <!-- 网站链接 -->
-    <Links />
+    <!-- 网站链接
+    <Link />  -->
   </div>
 </template>
 
@@ -16,7 +16,7 @@
 import { reactive, ref, onMounted } from "vue";
 import { mainStore } from "@/store";
 import Func from "@/views/Func/index.vue";
-import Links from "@/components/Links/index.vue";
+import Link from "@/components/Links/index.vue";
 const store = mainStore();
 
 // 站点链接
