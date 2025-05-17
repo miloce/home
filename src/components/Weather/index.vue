@@ -19,8 +19,9 @@ import { onMounted, reactive, h } from "vue";
 import { getAdcode, getWeather } from "@/api";
 import { Error } from "@icon-park/vue-next";
 
-// 腾讯地图开发者 Key
-let mainKey = import.meta.env.VITE_WEATHER_KEY;
+// 定位Key和天气Key
+let ipKey = import.meta.env.VITE_IP_KEY;
+let weatherKey = import.meta.env.VITE_WEATHER_KEY;
 
 // 天气数据
 let weatherData = reactive({
@@ -39,8 +40,10 @@ let weatherData = reactive({
 // 获取天气数据
 const getWeatherData = () => {
   // 获取地理位置信息
-  if (!mainKey) return onError("请配置天气 Key");
-  getAdcode(mainKey)
+  if (!ipKey) return onError("请配置IP定位 Key");
+  if (!weatherKey) return onError("请配置天气 Key");
+  
+  getAdcode(ipKey)
     .then((res) => {
       if (res.status === 0) { // 腾讯地图API状态码为0表示成功
         weatherData.adCode = {
@@ -48,18 +51,18 @@ const getWeatherData = () => {
           adcode: res.result.ad_info.adcode,
         };
         // 获取天气信息
-        getWeather(mainKey, weatherData.adCode.adcode)
+        getWeather(weatherKey, weatherData.adCode.adcode)
           .then((res) => {
-            if (res.status === 0) { // 腾讯地图API状态码为0表示成功
-              const weatherInfo = res.result.realtime;
+            if (res.status === "1") { // 高德地图API状态码为1表示成功
+              const weatherInfo = res.lives[0];
               weatherData.weather = {
                 weather: weatherInfo.weather, // 天气现象
                 temperature: weatherInfo.temperature, // 实时气温
-                winddirection: weatherInfo.wind_direction, // 风向描述
-                windpower: weatherInfo.wind_power, // 风力级别
+                winddirection: weatherInfo.winddirection, // 风向描述
+                windpower: weatherInfo.windpower, // 风力级别
               };
             } else {
-              onError("天气信息获取失败：" + res.message);
+              onError("天气信息获取失败：" + res.info);
             }
           })
           .catch(() => {

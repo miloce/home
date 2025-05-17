@@ -55,7 +55,7 @@ const props = defineProps({
   // 音频自动播放
   autoplay: {
     type: Boolean,
-    default: false,
+    default: true
   },
   // 主题色
   theme: {

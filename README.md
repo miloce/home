@@ -37,10 +37,11 @@ yarn build
 > 构建完成后，可将 `dist` 文件夹下的文件上传至服务器，也可使用 `Vercel` 等托管平台一键导入并自动部署
 ### 天气
 
-天气及地区获取现改用 `腾讯地图位置服务` 相关 API
+天气数据使用高德开放平台API，地区获取使用腾讯地图位置服务API
 
-- 前往 [腾讯位置服务控制台](https://lbs.qq.com/dev/console/application/mine) 创建一个应用，在应用管理中创建密钥，并将创建的 `Key` 填入 `.env` 中的 `VITE_WEATHER_KEY` 中
-- 需要在密钥管理中勾选「IP定位」和「天气查询」服务权限
+- 前往 [高德开放平台控制台](https://console.amap.com/dev/index) 创建一个 `Web 服务` 类型的 `Key`，并将 `Key` 填入 `.env` 中的 `VITE_WEATHER_KEY` 中
+- 前往 [腾讯位置服务控制台](https://lbs.qq.com/dev/console/application/mine) 创建一个应用，在应用管理中创建密钥，并将创建的 `Key` 填入 `.env` 中的 `VITE_IP_KEY` 中
+- 需要在腾讯位置服务的密钥管理中勾选「IP定位」服务权限
 
 也可自行更换其他方式
 
@@ -82,6 +83,7 @@ VITE_SONG_ID = "7452421335"
 * [MetingAPI By 武恩赐](https://api.wuenci.com/meting/api/)
 * [小歪 API](https://api.ixiaowai.cn/)
 * [高德开放平台](https://lbs.amap.com/)
+* [腾讯位置服务](https://lbs.qq.com/)
 * [Hitokoto 一言](https://hitokoto.cn/)
 
 <a title="SSL" target="_blank" href="https://myssl.com/seal/detail?domain=luozhinet.com"><img src="https://img.shields.io/badge/MySSL-安全认证-brightgreen"></a>&nbsp;<a title="CDN" target="_blank" href="https://cdnjs.com/"><img src="https://img.shields.io/badge/CDN-Cloudflare-blue"></a>&nbsp;<a title="Copyright" target="_blank" href="https://luozhinet.com/">
