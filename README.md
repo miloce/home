@@ -37,9 +37,10 @@ yarn build
 > 构建完成后，可将 `dist` 文件夹下的文件上传至服务器，也可使用 `Vercel` 等托管平台一键导入并自动部署
 ### 天气
 
-天气及地区获取需要 `高德开放平台` 相关 API
+天气及地区获取现改用 `腾讯地图位置服务` 相关 API
 
-- 前往 [高德开放平台控制台](https://console.amap.com/dev/index) 创建一个 `Web 服务` 类型的 `Key`，并将 `Key` 填入 `.env` 中的 `VITE_WEATHER_KEY` 中
+- 前往 [腾讯位置服务控制台](https://lbs.qq.com/dev/console/application/mine) 创建一个应用，在应用管理中创建密钥，并将创建的 `Key` 填入 `.env` 中的 `VITE_WEATHER_KEY` 中
+- 需要在密钥管理中勾选「IP定位」和「天气查询」服务权限
 
 也可自行更换其他方式
 

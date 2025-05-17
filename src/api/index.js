@@ -56,12 +56,12 @@ export const getHitokoto = async () => {
  * 天气
  */
 
-// 获取高德地理位置信息
+// 获取腾讯地图IP定位信息
 export const getAdcode = async (key) => {
-    return await enhancedFetch(`https://restapi.amap.com/v3/ip?key=${key}`);
+    return await enhancedFetch(`https://apis.map.qq.com/ws/location/v1/ip?key=${key}`);
 }
 
-// 获取高德地理天气信息
-export const getWeather = async (key, city) => {
-    return await enhancedFetch(`https://restapi.amap.com/v3/weather/weatherInfo?key=${key}&city=${city}`);
+// 获取腾讯地图天气信息
+export const getWeather = async (key, adcode) => {
+    return await enhancedFetch(`https://apis.map.qq.com/ws/weather/v1/?key=${key}&adcode=${adcode}`);
 }

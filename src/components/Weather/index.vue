@@ -19,7 +19,7 @@ import { onMounted, reactive, h } from "vue";
 import { getAdcode, getWeather } from "@/api";
 import { Error } from "@icon-park/vue-next";
 
-// 高德开发者 Key
+// 腾讯地图开发者 Key
 let mainKey = import.meta.env.VITE_WEATHER_KEY;
 
 // 天气数据
@@ -42,30 +42,31 @@ const getWeatherData = () => {
   if (!mainKey) return onError("请配置天气 Key");
   getAdcode(mainKey)
     .then((res) => {
-      if (res.status) {
+      if (res.status === 0) { // 腾讯地图API状态码为0表示成功
         weatherData.adCode = {
-          city: res.city,
-          adcode: res.adcode,
+          city: res.result.ad_info.city,
+          adcode: res.result.ad_info.adcode,
         };
         // 获取天气信息
         getWeather(mainKey, weatherData.adCode.adcode)
           .then((res) => {
-            if (res.status) {
+            if (res.status === 0) { // 腾讯地图API状态码为0表示成功
+              const weatherInfo = res.result.realtime;
               weatherData.weather = {
-                weather: res.lives[0].weather,
-                temperature: res.lives[0].temperature,
-                winddirection: res.lives[0].winddirection,
-                windpower: res.lives[0].windpower,
+                weather: weatherInfo.weather, // 天气现象
+                temperature: weatherInfo.temperature, // 实时气温
+                winddirection: weatherInfo.wind_direction, // 风向描述
+                windpower: weatherInfo.wind_power, // 风力级别
               };
             } else {
-              onError("天气信息获取失败");
+              onError("天气信息获取失败：" + res.message);
             }
           })
           .catch(() => {
             onError("天气信息获取失败");
           });
       } else {
-        onError("地理位置获取失败");
+        onError("地理位置获取失败：" + res.message);
       }
     })
     .catch(() => {
