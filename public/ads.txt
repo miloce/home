@@ -1,0 +1,2 @@
+# ads.txt for luozhinet.com
+# Add your authorized digital sellers entries here (IAB ads.txt format).

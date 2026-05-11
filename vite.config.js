@@ -45,6 +45,7 @@ export default ({
         enabled: true
       },
       workbox: {
+        navigateFallbackDenylist: [/^\/ads\.txt$/],
         runtimeCaching: [{
             urlPattern: /(.*?)\.(js|css|woff2|woff|ttf)/, // js / css 静态资源缓存
             handler: 'CacheFirst',
